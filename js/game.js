@@ -126,12 +126,15 @@ var level = new PointText({
 });
 
 
-	gameText.visible = true;
-	gameText.content = "Cliquez pour jouer !"
-	sound.play('start');
+
 
 
 function init() {
+
+		gameText.visible = true;
+		gameText.content = "Cliquez pour jouer !"
+		sound.play('start');
+	
 		gameText.visible = false;
 
 		Timer = 0;
@@ -192,10 +195,10 @@ function alea(n) {
 
 
 function onMouseDown(event) {
-	if (status ==1) { 
+	if (status == 1) { 
 		shotOrder = true;
 		
-	} else {
+	} else if ( status == 3 || status == 0){
 		init();
 		status = 1;
 	}
@@ -258,7 +261,9 @@ function hitTest() {
 				explosion.visible = true;
 				explosion.rotate((Math.random()-0.5)*100);
 				explosions.push( { sprite:explosion, life:300 } ); 
-				sound.play('explo1');
+						var n = alea(4);
+						var s = 'explo' + n;
+						sound.play(s);
 				targets[i].sprite.visible = false;
 				raster_sub.visible = false;
 				targets.splice(i,1);
@@ -443,20 +448,28 @@ function onFrame(event) {
 		hitTest();
 		leveling();
 		powerup();
-	} else if (status == 2 && nbrExplosion<10) {
+	} else if (status == 2) {
 		for (var i = 0; i < explosions.length; i++) {
 			explosions[i].life -= dt*1000;
 			if (explosions[i].life <= 0) {
 				nbrExplosion++;
+				if (nbrExplosion < 10) {
 				var explosion = raster_explo1.clone();	
-				explosion.position = explosions[i].position + new Point((Math.random()-0.5)*10, (Math.random()-0.5)*10);
+				explosion.position = raster_sub.position + new Point((Math.random()-0.5)*30, (Math.random()-0.5)*30);
 				explosion.visible = true;
 				explosion.rotate((Math.random()-0.5)*100);
-				sound.play('explo1');
+						var n = alea(4);
+						var s = 'explo' + n;
+						sound.play(s);
 				explosions[i].sprite.visible = false;
 				explosions.splice(i,1);
 				i--;
 				explosions.push( { sprite:explosion, life:(300-(nbrExplosion*25)) } ); 
+				} else {
+					status = 3;
+						gameText.visible = true;
+						gameText.content = "Game Over !!!  Click again to restart !"
+				}
 			}
 		}
 	}
