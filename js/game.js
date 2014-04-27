@@ -224,8 +224,8 @@ function hitTest() {
 function powerup() {
 
 	if ( (powerActive == false) && (Timer - lastPowerUp) > coolDown) {
-		if (Math.random() > 0.90) {
-			coolDown = 20;
+		if (Math.random() > 0.97) {
+			coolDown = 30;
 			lastPowerUp = Timer;
 			raster_powerup.position = new Point( (view.size.width+200), (100+Math.random()*(view.size.height-200)));
 			raster_powerup.visible = true;
@@ -234,10 +234,14 @@ function powerup() {
 }
 
 function newTarget() {
-	if (Math.random() > 0.99-(Timer*0.001)) {
+	var difficulty = (Timer*0.005)-(Level*0.01);
+	if (difficulty >= 0.99) { 
+		difficulty = 0.99;
+	}
+	if (Math.random() > (0.99-difficulty) {
 		var newspeed = (200 + Timer*0.001 + Level*10)*(Math.random()+0.5);
 		console.log(newspeed);
-		if (Math.random() > 0.59) {
+		if (Math.random() > 0.50) {
 			var target = raster_poisson.clone();
 		} else {
 			var target = raster_oiseau.clone();
@@ -287,10 +291,10 @@ function onFrame(event) {
 
 		if (lastShot <= 0 && shotOrder == true) {
 			if (unicornMode > 0) {
-				lastShot = 1000/(10+Level*0.5);
+				lastShot = 1000/(10+Level*0.01);
 			}
 			else {
-				lastShot = 1000/(1+Level*0.5);
+				lastShot = 1000/(1+Level*0.01);
 			}
 			var torpedo = raster_torpedo.clone();
 			torpedo.position = raster_sub.position + new Point(150,10);
