@@ -10,6 +10,13 @@ var status = 0;
 var Level = 1;
 var lastShot = 0;
 
+var hitOptions = {
+	segments: true,
+	stroke: true,
+	fill: true,
+	tolerance: 5
+};
+
 raster_sub.scale(0.3);
 raster_torpedo.scale(0.2);
 raster_oiseau.scale(0.2);
@@ -212,7 +219,7 @@ function onMouseDown(event) {
 
 function hitTest() {
 	if (raster_powerup.visible == true) {
-		var hit = raster_powerup.hitTest(raster_sub.position);
+		var hit = raster_powerup.hitTest(raster_sub.position, hitOptions);
 		if (hit != null) {
 			sound.play('unicorn');
 
@@ -229,7 +236,7 @@ function hitTest() {
 		for (var j = 0; j < torpedos.length; j++) {
 			if (targets[i] != null && torpedos[j] != null) {
 				var torpedo = torpedos[j];
-				var hit = targets[i].sprite.hitTest(torpedo.position);
+				var hit = targets[i].sprite.hitTest(torpedo.position, hitOptions);
 				if (hit != null) {
 					var explosion = raster_explo1.clone();	
 					explosion.position = targets[i].sprite.position;
@@ -259,7 +266,7 @@ function hitTest() {
 		
 		// Death test
 		if (targets[i] != null) {
-			var hit = targets[i].sprite.hitTest(raster_sub.position);
+			var hit = targets[i].sprite.hitTest(raster_sub.position, hitOptions);
 			if (hit != null) {
 				var explosion = raster_explo1.clone();	
 				explosion.position = raster_sub.position;
@@ -296,7 +303,7 @@ function powerup() {
 }
 
 function newTarget() {
-	var difficulty = (Timer*0.002)-(Level*0.03);
+	var difficulty = (Timer*0.001)+(Level*0.01);
 	if (difficulty >= 0.99) { 
 		difficulty = 0.99;
 	}
@@ -394,13 +401,27 @@ function onFrame(event) {
 		timer.content = Math.round(Timer);
 		
 		raster_sub.position += (mousePos - raster_sub.position)*0.05;
+		
+		if ((raster_sub.position.x - raster_sub.bounds.width/2) < 0) {
+			raster_sub.position.x = raster_sub.bounds.width/2;
+		}
+		if ((raster_sub.position.x + raster_sub.bounds.width/2) > view.size.width) {
+			raster_sub.position.x = view.size.width-raster_sub.bounds.width/2;
+		}
+		
+		if ((raster_sub.position.y - raster_sub.bounds.height/2) < 0) {
+			raster_sub.position.y = raster_sub.bounds.height/2;
+		}
+		if ((raster_sub.position.y + raster_sub.bounds.height/2) > view.size.height) {
+			raster_sub.position.y = view.size.height-raster_sub.bounds.height/2;
+		}
 
 		if (lastShot <= 0 && shotOrder == true && unicornMode < 10000) {
 			if (unicornMode > 0) { 
 				lastShot = 1000/(10+Level*0.01);
 			}
 			else {
-				lastShot = 1000/(1+Level*0.01);
+				lastShot = 1000/(1+Level*0.1);
 			}
 			var n = alea(4);
 			var s = 'torpedo' + n; 
