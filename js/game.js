@@ -238,7 +238,7 @@ function newTarget() {
 	if (difficulty >= 0.99) { 
 		difficulty = 0.99;
 	}
-	if (Math.random() > (0.99-difficulty) {
+	if (Math.random() > (0.99-difficulty)) {
 		var newspeed = (200 + Timer*0.001 + Level*10)*(Math.random()+0.5);
 		console.log(newspeed);
 		if (Math.random() > 0.50) {
