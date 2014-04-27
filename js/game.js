@@ -44,7 +44,10 @@ var unicornMode = 0;
 var shotOrder = false;
 
 var nbrExplosion=0;
+var firstPlay = true;			
 
+var sousmarin_sound = new Howl({  urls: ['sound/sous_marin.mp3', 'sound/sous_marin.ogg']});
+var game_over = new Howl({  urls: ['sound/game_over.mp3', 'sound/game_over.ogg']});
 var sound = new Howl({  urls: ['sound/sounds.mp3', 'sound/sounds.ogg'],  sprite: {    
 									start: [39, 1262-39],  
 									bloub1: [1384, 1833-1384], 
@@ -130,6 +133,8 @@ var level = new PointText({
 
 
 function init() {
+
+		firstPlay = true;			
 
 		gameText.visible = true;
 		gameText.content = "Cliquez pour jouer !"
@@ -253,7 +258,7 @@ function hitTest() {
 		}
 		
 		// Death test
-		if (targets[i] != null && unicornMode == 0) {
+		if (targets[i] != null) {
 			var hit = targets[i].sprite.hitTest(raster_sub.position);
 			if (hit != null) {
 				var explosion = raster_explo1.clone();	
@@ -268,7 +273,9 @@ function hitTest() {
 				raster_sub.visible = false;
 				targets.splice(i,1);
 				i--;
+				if (unicornMode == 0) {
 				status = 2;
+				}
 			}
 		}
 		
@@ -331,6 +338,7 @@ for (var c=0; c<7; c++) {
 	var path = new Path();
 	for (var i=0; i<rainLen; i++) {
 		path.strokeWidth = 10;
+		path.strokeCap = 'round';
 		path.strokeColor = colors[c];
 		path.add( new Point(view.center.x-rainStep*i, view.center.y + (c-3)*rainWidth) );
 	}
@@ -344,13 +352,13 @@ function rainbow(dt) {
 	}
 	for (var c=0; c<rain.children.length; c++) {
 		path = rain.children[c];
-		for (var i=path.segments.length - 1; i > 0; i--  ) {
+		for (var i=path.segments.length - 1; i > 0; i--) {
 		
 			path.segments[i].point = path.segments[i-1].point + new Point(-10,0);
 		
 		}
 
-		path.firstSegment.point = raster_sub.position + new Point(-80-(c-3)*8, (c-3)*rainWidth);
+		path.firstSegment.point = raster_sub.position + new Point(-100-(c-3)*2, 0+(c-3)*rainWidth);
 	}
 }
 
@@ -362,6 +370,10 @@ function onFrame(event) {
 	if (status == 1) {
 		
 		if (unicornMode > 0) {
+			if (unicornMode <= 1000 && firstPlay == true) {
+				sousmarin_sound.play();
+				firstPlay = false;
+			}
 			rainbow();
 			unicornMode -= dt*1000;
 			raster_licorne.position = raster_sub.position;
@@ -371,6 +383,7 @@ function onFrame(event) {
 				unicornMode = 0;
 				raster_sub.visible = true;
 				raster_licorne.visible = false;
+				firstPlay = true;
 			}
 		} else {
 			//raster_sub.rotate( 2*Math.sin(2*3.14*dt*1000) );
@@ -392,10 +405,16 @@ function onFrame(event) {
 			var n = alea(4);
 			var s = 'torpedo' + n; 
 			sound.play(s);
-			var torpedo = raster_torpedo.clone();
-			torpedo.position = raster_sub.position + new Point(150,10);
-			torpedo.visible = true;
-			torpedos.push( torpedo );
+			var nbTorpedo = 1+2*(Math.floor(Level/2));
+			if (unicornMode > 0) {
+				nbTorpedo = 1;
+			}			
+			for (var k=0; k<nbTorpedo; k++) {
+				var torpedo = raster_torpedo.clone();
+				torpedo.position = raster_sub.position + new Point(150,10+(nbTorpedo/2-k)*50);
+				torpedo.visible = true;
+				torpedos.push( torpedo );
+			}
 			if (unicornMode == 0) {
 				Score -= 20;
 			}
@@ -468,7 +487,8 @@ function onFrame(event) {
 				} else {
 					status = 3;
 						gameText.visible = true;
-						gameText.content = "Game Over !!!  Click again to restart !"
+						gameText.content = "Game Over !!!  Click to restart !";
+						game_over.play();
 				}
 			}
 		}
