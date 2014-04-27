@@ -296,7 +296,7 @@ function powerup() {
 }
 
 function newTarget() {
-	var difficulty = (Timer*0.001)-(Level*0.01);
+	var difficulty = (Timer*0.002)-(Level*0.03);
 	if (difficulty >= 0.99) { 
 		difficulty = 0.99;
 	}
@@ -405,7 +405,7 @@ function onFrame(event) {
 			var n = alea(4);
 			var s = 'torpedo' + n; 
 			sound.play(s);
-			var nbTorpedo = 1+2*(Math.floor(Level/2));
+			var nbTorpedo = 1+2*(Math.floor(Level/10));
 			if (unicornMode > 0) {
 				nbTorpedo = 1;
 			}			
